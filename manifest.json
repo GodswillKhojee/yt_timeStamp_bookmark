@@ -1,0 +1,48 @@
+{
+    "manifest_version": 3,
+    "name": "YT Bookmark",
+    "version": "0.1.0",
+    "description": "Save and manage timeStamps for YouTube videos.",
+    "permissions": [
+        "storage",
+        "tabs"
+    ],
+    "host_permissions": [
+        "https://*.youtube.com/*"
+    ],
+    "background": {
+        "service_worker": "background.js"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "https://*.youtube.com/*"
+            ],
+            "js": [
+                "contentScript.js"
+            ]
+        }
+    ],
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "assets/bookmark.png",
+                "assets/play.png",
+                "assets/delete.png",
+                "assets/save.png"
+            ],
+            "matches": [
+                "https://*.youtube.com/*"
+            ]
+        }
+    ],
+    "action": {
+        "default_icon": {
+            "16": "assets/exit.png",
+            "24": "assets/exit.png",
+            "32": "assets/exit.png"
+        },
+        "default_title": "YT TimeStamp",
+        "default_popup": "popup.js"
+    }
+}
