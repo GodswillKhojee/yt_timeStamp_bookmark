@@ -64,3 +64,97 @@ it is simply a blueprint for the browser to that what is the extension about, wh
   }
 }
 ```
+
+`background.js` -> 
+
+```js
+chrome.tabs.onUpdated.addlistener((tabId, tab) => {
+
+	if (tab.url && tab.url.includes("youtube.com/watch")) {
+	const queryParameters = tab.url.split("?")[1];
+	const urlParameters = new URLSearchParams(queryParameter);
+	chrome.tab.sendMessage(tabId, {
+	
+		type: "NEW",
+		videoId: urlParameter.get("v")
+		
+		});
+	}
+});
+```
+`background` is checking the tab if it is switches or not then checking if the `url`is of "youtube.com/watch" 
+
+then getting the unique video code by using split method '?'
+
+then using `sendMessage` we are sending type if the tab is new and videoId to `contentScripts`
+
+```js
+// this is a Immediately Invoked Function Expression
+(()=>{
+
+	let youtubeLeftControls, youtubePlayer;
+	let currentVideo = "";
+	chrome.runtime.onMessage.addListener((obj, sender, response) =>
+	{
+		const {type, value, videoId} = obj; // object destructuring
+		
+		if(type == "NEW")
+		{
+			currentVideo = videoId;
+			console.log(currentVideo);
+			newVideoLoaded();
+		}
+	
+	})
+
+});
+```
+
+`contentScript.js` runs inside the YouTube webpage and communicates with the extension's background script.
+
+## What it does
+
+- Listens for messages from `background.js` using `chrome.runtime.onMessage`.
+- Checks if the received message is of type `"NEW"`.
+- Stores the current YouTube video's ID in `currentVideo`.
+- Calls `newVideoLoaded()` whenever a new video is detected.
+
+## Message Format
+
+The background script sends a message like:
+
+```
+{
+    type: "NEW",
+    videoId: "abc123"
+}
+```
+
+The content script receives it and extracts the values:
+
+```
+const { type, videoId } = obj;
+```
+
+Then it stores the video ID:
+
+```
+currentVideo = videoId;
+```
+
+## Communication Flow
+
+```
+background.js
+     │
+     │ sendMessage()
+     ▼
+contentScript.js
+     │
+     │ onMessage
+     ▼
+currentVideo = videoId
+     │
+     ▼
+newVideoLoaded()
+```

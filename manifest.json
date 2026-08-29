@@ -11,7 +11,7 @@
         "https://*.youtube.com/*"
     ],
     "background": {
-        "service_worker": "background.js"
+        "scripts": ["background.js"]
     },
     "content_scripts": [
         {
@@ -43,6 +43,6 @@
             "32": "assets/exit.png"
         },
         "default_title": "YT TimeStamp",
-        "default_popup": "popup.js"
+        "default_popup": "popup.html"
     }
 }
