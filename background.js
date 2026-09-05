@@ -4,7 +4,7 @@ api.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (changeInfo.status === "complete" && tab.url) {
 
         const url = new URL(tab.url); // full url
- 
+
         // check if url is of yt video
         if (url.hostname.includes("youtube.com") &&
             url.pathname === "/watch") {

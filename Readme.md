@@ -158,3 +158,105 @@ currentVideo = videoId
      ▼
 newVideoLoaded()
 ```
+
+
+i made changes to `background.js` 
+HERE 
+
+ (tabId, changeInfo, tab)
+ 
+1. `tabId` - The unique ID of the browser tab.
+```
+Tab 1 → ID 123
+Tab 2 → ID 456
+Tab 3 → ID 789
+```
+
+2. `changedInfo` -Contains information about **what changed**.
+   could be loading or complete
+
+3. `tab` cantains the info about the tab itself like url
+
+```js
+if (changeInfo.status === "complete" && tab.url)
+```
+this check if the url complete and status of url is complete
+
+```js
+const api = typeof browser !== "undefined" ? browser : chrome;
+
+api.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+	
+	if (changeInfo.status === "complete" && tab.url) {
+		const url = new URL(tab.url); // full url 
+		// check if url is of yt video
+		
+		if (url.hostname.includes("youtube.com") && url.pathname === "/watch") {
+		const videoId = url.searchParams.get("v");
+		console.log(":-) YouTube video ID:", videoId);
+			if (videoId) {
+				api.tabs.sendMessage(tabId, {
+				type: "NEW",
+				videoId: videoId
+				}).then(() => {
+				console.log(":-) Message sent successfully");
+				}).catch((error) => {
+				console.log(":-( Message failed:", error);
+				});
+		
+			}
+		}
+	}
+});
+```
+
+```js
+api.runtime.onMessage.addListener((obj) => {
+		const { type, videoId } = obj;
+```
+this part listen when ever a user click on a new video then the videoId of that video is saved for future use
+
+`newVideoLoaded` is for showing the bookmark on the left control button 
+for this we gets the 0th index of the left control button then get the bookmark button 
+
+if the bookmark dosen't exist then we do
+
+using `DOM` create `img` 
+then adding the `scr`, `classname`, `title`
+
+then appending to the youtube left controls
+```js
+(() => {
+	const api = typeof browser !== "undefined" ? browser : chrome;
+	let currentVideo = "";
+	console.log(":-) Content script loaded!");
+	api.runtime.onMessage.addListener((obj) => {
+		const { type, videoId } = obj;
+		console.log(":-) Message received:", obj);
+		if (type === "NEW") {
+			curentVideo = videoId;	
+			console.log("Current video:", currentVideo);	
+			newVideoLoaded();
+		}
+	});
+	
+	const newVideoLoaded = () => {
+		const youtubeLeftControls = document.getElementsByClassName("ytp-left-controls")[0];
+		if (!youtubeLeftControls) {
+			console.log(":-( YouTube controls not found");	
+			return;
+		}
+		const bookmarkBtnExist = document.getElementsByClassName("bookmark-btn")[0]
+		if (!bookmarkBtnExist) {
+		
+			const bookmarkBtn = document.createElement("img")
+			bookmarkBtn.src = api.runtime.getURL("assets/bookmark.png")
+			bookmarkBtn.className = "ytp-button " + "bookmark-btn"
+			bookmarkBtn.title = "Click to bookmark current timestamp"
+			youtubeLeftControls.appendChild(bookmarkBtn);
+		
+		}
+	};
+	newVideoLoaded();
+})();
+```

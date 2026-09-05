@@ -8,7 +8,7 @@
         console.log(":-) Message received:", obj);
         if (type === "NEW") {
 
-            curentVideo = videoId;
+            currentVideo = videoId;
             console.log("Current video:", currentVideo);
             newVideoLoaded();
         }
