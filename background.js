@@ -1,15 +1,28 @@
 const api = typeof browser !== "undefined" ? browser : chrome;
 
-api.tabs.onUpdated.addListener((tabId, tab) => {
-    if (tab.url && tab.url.includes("youtube.com/watch")) {
-        // const queryParameters = tab.url.split("?")[1];
-        // const urlParameters = new URLSearchParams(queryParameter);
-        const url = new URL(tab.url);
+api.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    if (changeInfo.status === "complete" && tab.url) {
 
-        api.tabs.sendMessage(tabId, {
-            type: "NEW",
-            videoId: url.searchParams.get("v"),
-            // videoId: urlParameter.get("v")
-        });
+        const url = new URL(tab.url); // full url
+ 
+        // check if url is of yt video
+        if (url.hostname.includes("youtube.com") &&
+            url.pathname === "/watch") {
+
+            const videoId = url.searchParams.get("v");
+
+            console.log(":-) YouTube video ID:", videoId);
+
+            if (videoId) {
+                api.tabs.sendMessage(tabId, {
+                    type: "NEW",
+                    videoId: videoId
+                }).then(() => {
+                    console.log(":-) Message sent successfully");
+                }).catch((error) => {
+                    console.log(":-( Message failed:", error);
+                });
+            }
+        }
     }
 });

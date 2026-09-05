@@ -11,16 +11,12 @@
         "https://*.youtube.com/*"
     ],
     "background": {
-        "scripts": ["background.js"]
+        "service_worker": "background.js"
     },
     "content_scripts": [
         {
-            "matches": [
-                "https://*.youtube.com/*"
-            ],
-            "js": [
-                "contentScript.js"
-            ]
+            "matches": ["https://*.youtube.com/*"],
+            "js": [ "contentScript.js"]
         }
     ],
     "web_accessible_resources": [
@@ -31,9 +27,7 @@
                 "assets/delete.png",
                 "assets/save.png"
             ],
-            "matches": [
-                "https://*.youtube.com/*"
-            ]
+            "matches": ["https://*.youtube.com/*"]
         }
     ],
     "action": {
